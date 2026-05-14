@@ -6,9 +6,22 @@ import datetime
 from discord import app_commands
 from discord.ext import commands
 from dotenv import load_dotenv
-
+from flask import Flask
+from threading import Thread
 # Load environment variables from .env file
 load_dotenv()
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "Bot is alive!"
+
+def run_web():
+    app.run(host='0.0.0.0', port=8080)
+
+def keep_alive():
+    t = Thread(target=run_web)
+    t.start()
 
 # Optional guild ID to sync slash commands immediately in a test server
 GUILD_ID = os.getenv('GUILD_ID')
@@ -655,6 +668,7 @@ if __name__ == "__main__":
     token = os.getenv('DISCORD_TOKEN')
     if token:
         try:
+            keep_alive()
             bot.run(token)
         except RuntimeError as e:
             if "already running" in str(e).lower():
