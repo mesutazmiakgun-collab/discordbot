@@ -62,7 +62,9 @@ def cleanup_lock():
 # Create bot with proper intents for slash commands
 intents = discord.Intents.default()
 intents.message_content = True  # Required for reading message content
-bot = commands.Bot(command_prefix=None, intents=intents, help_command=None)
+# Use a callable that returns an empty iterable to disable prefix commands
+# (passing None causes discord.py to raise TypeError when processing messages)
+bot = commands.Bot(command_prefix=lambda _bot, _msg: [], intents=intents, help_command=None)
 bot_start_time = discord.utils.utcnow()
 
 @bot.before_invoke
