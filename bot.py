@@ -101,7 +101,7 @@ async def help_slash(interaction: discord.Interaction):
     embed = discord.Embed(title="Bot Help", description="Use slash commands in this server. Type `/` to open the command menu with autocomplete.", color=discord.Color.green())
     embed.add_field(name="🤖 Bot Commands", value="/hello - Say hello!\n/bye - Say goodbye!\n/howareyou - Ask how the bot is doing\n/ineedhelp - Get help information\n/wherecanigethelp - Learn where to get help\n/whoareyou - Learn about the bot\n/whatcanyoudo - See bot capabilities\n/tsbtrailer - Get TSB trailer link", inline=False)
     embed.add_field(name="ℹ️ Info Commands", value="/ping - Check bot latency\n/serverinfo - Get server information\n/userinfo [user] - Get user information\n/avatar [user] - Get user avatar\n/botinfo - Show bot information\n/membercount - Show member count\n/servericon - Show server icon\n/serverstats - Show detailed server stats\n/invite - Get bot invite link\n/help - Show this help menu", inline=False)
-    embed.add_field(name="🎲 Fun Commands", value="/roll [sides] - Roll a dice (default 6)\n/coinflip - Flip a coin\n/rps <choice> - Play rock-paper-scissors\n/8ball <question> - Ask the magic 8-ball\n/choose <opt1> | <opt2> | ... - Let bot choose\n/quote - Get a random quote\n/joke - Hear a random joke\n/inspire - Get inspiration\n/fact - Get a random fact\n/reverse <text> - Reverse text\n/poll <question> - Create a yes/no poll\n/hug <user> - Give someone a hug\n/slap <user> - Playfully slap someone\n/color - Show a random color", inline=False)
+    embed.add_field(name="🎲 Fun Commands", value="/roll [sides] - Roll a dice (default 6)\n/coinflip - Flip a coin\n/rps <choice> - Play rock-paper-scissors\n/8ball <question> - Ask the magic 8-ball\n/choose <opt1> | <opt2> | ... - Let bot choose\n/quote - Get a random quote\n/joke - Hear a random joke\n/inspire - Get inspiration\n/fact - Get a random fact\n/reverse <text> - Reverse text\n/poll <question> - Create a yes/no poll\n/hug <user> - Give someone a hug\n/slap <user> - Playfully slap someone\n/kiss <user> - Kiss someone\n/punch <user> - Punch someone playfully\n/dance [user] - Dance with someone\n/color - Show a random color\n/commands - List all available commands", inline=False)
     embed.add_field(name="🛡️ Moderation Commands", value="/clear [amount] - Clear messages\n/kick <user> [reason] - Kick a user\n/ban <user> [reason] - Ban a user\n/unban <name> - Unban a user\n/mute <user> [minutes] - Timeout user\n/unmute <user> - Remove timeout\n/warn <user> [reason] - Warn a user\n/slowmode <seconds> - Set channel slowmode\n/lockdown - Lock channel\n/unlock - Unlock channel\n/announce <message> - Make announcement", inline=False)
     embed.add_field(name="⚙️ Utility Commands", value="/say <message> - Make bot repeat message\n/embed <title> <description> - Create embed\n/timer <minutes> - Set a timer\n/remind <minutes> <message> - Set reminder\n/countdown <seconds> - Start countdown\n/roles [user] - Show user roles\n/serverroles - List server roles\n/suggest <suggestion> - Submit suggestion\n/feedback <feedback> - Give feedback\n/serverrules - Show server rules\n/serverbanner - Show server banner\n/roleinfo <role> - Get role details", inline=False)
     embed.set_footer(text="More commands are coming soon!")
@@ -354,16 +354,32 @@ async def choose_slash(interaction: discord.Interaction, options: str):
 async def say_slash(interaction: discord.Interaction, message: str):
     await interaction.response.send_message(message)
 
-@bot.tree.command(name='embed', description='Create an embed')
-async def create_embed_slash(interaction: discord.Interaction, title: str, description: str):
+@bot.tree.command(name='embed', description='Create an embed with color and fields')
+async def create_embed_slash(interaction: discord.Interaction, title: str, description: str, color: str = 'blue'):
     if len(title) > 256:
         await interaction.response.send_message('❌ Title is too long! Maximum 256 characters.')
         return
     if len(description) > 4096:
         await interaction.response.send_message('❌ Description is too long! Maximum 4096 characters.')
         return
-    embed = discord.Embed(title=title, description=description, color=discord.Color.green())
-    embed.set_footer(text=f'Requested by {interaction.user}', icon_url=interaction.user.display_avatar.url)
+    
+    # Parse color
+    color_map = {
+        'red': discord.Color.red(),
+        'blue': discord.Color.blue(),
+        'green': discord.Color.green(),
+        'yellow': discord.Color.gold(),
+        'purple': discord.Color.purple(),
+        'pink': discord.Color.magenta(),
+        'cyan': discord.Color.cyan(),
+        'orange': discord.Color.orange(),
+        'white': discord.Color.lighter_gray(),
+    }
+    embed_color = color_map.get(color.lower(), discord.Color.blue())
+    
+    embed = discord.Embed(title=title, description=description, color=embed_color)
+    embed.set_footer(text=f'Created by {interaction.user}', icon_url=interaction.user.display_avatar.url)
+    embed.timestamp = discord.utils.utcnow()
     await interaction.response.send_message(embed=embed)
 
 @bot.tree.command(name='uptime', description='Show bot uptime')
@@ -614,7 +630,58 @@ async def hug_slash(interaction: discord.Interaction, member: discord.Member):
 
 @bot.tree.command(name='slap', description='Playfully slap someone')
 async def slap_slash(interaction: discord.Interaction, member: discord.Member):
-    await interaction.response.send_message(f'😅 {interaction.user.mention} playfully slaps {member.mention}!')
+    messages = [
+        f'😅 {interaction.user.mention} playfully slaps {member.mention}!',
+        f'🤨 {interaction.user.mention} smacks {member.mention} across the face!',
+        f'💢 {interaction.user.mention} slaps {member.mention} with a fish!',
+        f'👋 {interaction.user.mention} gives {member.mention} a mighty slap!',
+    ]
+    await interaction.response.send_message(random.choice(messages))
+
+@bot.tree.command(name='kiss', description='Kiss someone')
+async def kiss_slash(interaction: discord.Interaction, member: discord.Member):
+    messages = [
+        f'😘 {interaction.user.mention} kisses {member.mention}!',
+        f'💋 {interaction.user.mention} gives {member.mention} a kiss!',
+        f'😚 Smooch! {interaction.user.mention} → {member.mention}',
+    ]
+    await interaction.response.send_message(random.choice(messages))
+
+@bot.tree.command(name='punch', description='Punch someone playfully')
+async def punch_slash(interaction: discord.Interaction, member: discord.Member):
+    messages = [
+        f'👊 {interaction.user.mention} punches {member.mention}!',
+        f'💥 {interaction.user.mention} throws a punch at {member.mention}!',
+        f'🥊 {interaction.user.mention} lands a hit on {member.mention}!',
+    ]
+    await interaction.response.send_message(random.choice(messages))
+
+@bot.tree.command(name='dance', description='Dance with someone')
+async def dance_slash(interaction: discord.Interaction, member: discord.Member = None):
+    if member:
+        messages = [
+            f'💃 {interaction.user.mention} dances with {member.mention}!',
+            f'🕺 {interaction.user.mention} and {member.mention} are dancing!',
+        ]
+        await interaction.response.send_message(random.choice(messages))
+    else:
+        messages = [
+            f'💃 {interaction.user.mention} is dancing!',
+            f'🕺 {interaction.user.mention} busts a move!',
+        ]
+        await interaction.response.send_message(random.choice(messages))
+
+@bot.tree.command(name='commands', description='Show all available slash commands')
+async def list_commands_slash(interaction: discord.Interaction):
+    commands = [cmd.name for cmd in interaction.client.tree.walk_commands()]
+    cmd_text = ', '.join(sorted(commands))
+    embed = discord.Embed(title='📋 Available Commands', description=f'Total: {len(commands)}', color=discord.Color.blurple())
+    # Split into chunks for readability
+    chunk_size = 10
+    for i in range(0, len(commands), chunk_size):
+        chunk = commands[i:i+chunk_size]
+        embed.add_field(name=f'Commands {i+1}-{min(i+chunk_size, len(commands))}', value=', '.join(sorted(chunk)), inline=False)
+    await interaction.response.send_message(embed=embed, ephemeral=True)
 
 @bot.tree.command(name='color', description='Show a random color')
 async def color_slash(interaction: discord.Interaction):
@@ -627,6 +694,52 @@ async def color_slash(interaction: discord.Interaction):
     embed.add_field(name='Hex', value=f'#{value:06X}', inline=True)
     embed.add_field(name='RGB', value=f'({r}, {g}, {b})', inline=True)
     await interaction.response.send_message(embed=embed)
+
+@bot.tree.command(name='rate', description='Rate something or someone')
+async def rate_slash(interaction: discord.Interaction, target: str):
+    rating = random.randint(1, 10)
+    response = f'📊 I rate {target}: **{rating}/10**'
+    if rating <= 3:
+        response += ' 💔'
+    elif rating <= 6:
+        response += ' 😐'
+    elif rating <= 8:
+        response += ' 😊'
+    else:
+        response += ' 😍'
+    await interaction.response.send_message(response)
+
+@bot.tree.command(name='poke', description='Poke someone')
+async def poke_slash(interaction: discord.Interaction, member: discord.Member):
+    messages = [
+        f'👉 {interaction.user.mention} pokes {member.mention}!',
+        f'💬 {interaction.user.mention} pokes {member.mention} with a stick!',
+        f'✨ {interaction.user.mention} curiously pokes {member.mention}!',
+    ]
+    await interaction.response.send_message(random.choice(messages))
+
+@bot.tree.command(name='trivia', description='Get a fun trivia fact')
+async def trivia_slash(interaction: discord.Interaction):
+    trivia_facts = [
+        'Honey lasts forever! Archaeologists found 3,000-year-old honey that was still edible.',
+        'A group of flamingos is called a \"flamboyance\".',
+        'Bananas are berries, but strawberries are not technically berries.',
+        'Octopuses have three hearts and blue blood.',
+        'A day on Venus is longer than a year on Venus.',
+        'Butterflies taste with their feet.',
+        'Penguins can jump up to 6 meters high.',
+        'Sharks have been on Earth longer than dinosaurs.',
+        'A cockroach can live for a week without its head.',
+        'Cleopatra lived closer to the invention of pizza than to the building of the Great Pyramid.',
+    ]
+    await interaction.response.send_message(f'🧠 {random.choice(trivia_facts)}')
+
+@bot.tree.command(name='ship', description='Ship two people together')
+async def ship_slash(interaction: discord.Interaction, person1: str, person2: str):
+    percentage = random.randint(1, 100)
+    bars = '█' * (percentage // 10) + '░' * (10 - percentage // 10)
+    response = f'💕 **{person1}** + **{person2}** = **{percentage}%** compat\n{bars}'
+    await interaction.response.send_message(response)
 
 # Info Commands
 # Fun Commands
