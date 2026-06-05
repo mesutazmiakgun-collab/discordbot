@@ -81,9 +81,12 @@ async def on_ready():
             synced = await bot.tree.sync(guild=guild)
             print(f"Synced {len(synced)} guild slash command(s) for guild {GUILD_ID}")
         elif bot.guilds:
-            guild = bot.guilds[0]
-            synced = await bot.tree.sync(guild=guild)
-            print(f"Synced {len(synced)} guild slash command(s) for first guild {guild.id}")
+            synced = []
+            for guild in bot.guilds:
+                guild_synced = await bot.tree.sync(guild=guild)
+                synced.extend(guild_synced)
+                print(f"Synced {len(guild_synced)} slash command(s) for guild {guild.id}")
+            print(f"Synced slash commands in {len(bot.guilds)} guild(s)")
         else:
             synced = await bot.tree.sync()
             print(f"Synced {len(synced)} global slash command(s)")
@@ -659,6 +662,18 @@ async def on_command_error(ctx, error):
         # Log the error for debugging but don't show full error to users
         print(f"Unhandled error in command {ctx.command}: {error}")
         await ctx.send("❌ An unexpected error occurred! Please try again later.")
+
+@bot.tree.error
+async def on_app_command_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
+    print(f"[Slash Command Error] {interaction.command.name if interaction.command else 'unknown'}: {type(error).__name__} - {error}")
+    if isinstance(error, app_commands.MissingPermissions):
+        await interaction.response.send_message("❌ You don't have permission to use that command.", ephemeral=True)
+    elif isinstance(error, app_commands.CommandOnCooldown):
+        await interaction.response.send_message("❌ This command is on cooldown. Try again later.", ephemeral=True)
+    elif isinstance(error, app_commands.MissingRequiredArgument):
+        await interaction.response.send_message("❌ Missing required argument for this command.", ephemeral=True)
+    else:
+        await interaction.response.send_message("❌ Command failed. Please try again later.", ephemeral=True)
 
 # Only run the bot when this script is executed directly
 if __name__ == "__main__":
