@@ -61,6 +61,8 @@ def cleanup_lock():
 
 # Create bot with proper intents for slash commands
 intents = discord.Intents.default()
+intents.guilds = True
+intents.members = True
 intents.message_content = True  # Required for reading message content
 # Use a callable that returns an empty iterable to disable prefix commands
 # (passing None causes discord.py to raise TypeError when processing messages)
@@ -72,9 +74,16 @@ async def before_command(ctx):
     pass  # Silently track command execution
 
 @bot.event
+async def on_message(message: discord.Message):
+    # Ignore all message content handling; this bot is slash-command only.
+    return
+
+@bot.event
 async def on_ready():
     print(f'{bot.user} olarak giriş yaptık.')
     print(f'Loaded {len(bot.commands)} commands: {[cmd.name for cmd in bot.commands]}')
+    print(f'GUILD_ID={GUILD_ID}')
+    print(f'Guild count: {len(bot.guilds)}, guilds: {[guild.id for guild in bot.guilds]}')
     
     # Sync slash commands
     try:
