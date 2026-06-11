@@ -137,6 +137,11 @@ async def help_slash(interaction: discord.Interaction):
 
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
+# Slash command versions for popup/autocomplete support
+@bot.tree.command(name='hello', description='Say hello')
+async def hello_slash(interaction: discord.Interaction):
+    await interaction.response.send_message('hello!')
+
 @bot.tree.command(name='kill', description='Generate a random death message')
 async def kill_slash(interaction: discord.Interaction, member: discord.Member):
 
@@ -152,11 +157,6 @@ async def kill_slash(interaction: discord.Interaction, member: discord.Member):
     )
 
     await interaction.response.send_message(embed=embed)
-
-# Slash command versions for popup/autocomplete support
-@bot.tree.command(name='hello', description='Say hello')
-async def hello_slash(interaction: discord.Interaction):
-    await interaction.response.send_message('hello!')
 
 @bot.tree.command(name='bye', description='Say goodbye')
 async def bye_slash(interaction: discord.Interaction):
