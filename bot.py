@@ -106,6 +106,24 @@ async def on_ready():
         print(f"Slash commands registered: {registered}")
     except Exception as e:
         print(f"Failed to sync slash commands: {e}")
+death_messages = [
+"{victim} was run over by an F-18 flown by {killer}.",
+"{victim} was sniped by {killer} from 50ft away.",
+"{victim} was quickscoped by {killer}.",
+"{victim} was no-scoped by {killer}.",
+"{victim} was flattened by a piano dropped by {killer}.",
+"{victim} was launched into the sun by {killer}.",
+"{victim} was erased from existence by {killer}.",
+"{victim} was fed to a shark by {killer}.",
+"{victim} was hunted down by {killer}'s attack helicopter.",
+"{victim} forgot to pay taxes and was found by {killer}.",
+"{victim} challenged {killer} to a duel and lost.",
+"{victim} was drop-kicked into another dimension by {killer}.",
+"{victim} was crushed by a giant rubber duck summoned by {killer}.",
+"{victim} was vaporized by {killer}'s orbital laser.",
+"{victim} was sent to the shadow realm by {killer}.",
+"{victim} was deleted from the server by {killer}."
+]
 
 @bot.tree.command(name="help", description="Show bot commands and usage")
 async def help_slash(interaction: discord.Interaction):
@@ -118,6 +136,22 @@ async def help_slash(interaction: discord.Interaction):
     embed.set_footer(text="More commands are coming soon!")
 
     await interaction.response.send_message(embed=embed, ephemeral=True)
+
+@bot.tree.command(name='kill', description='Generate a random death message')
+async def kill_slash(interaction: discord.Interaction, member: discord.Member):
+
+    death_message = random.choice(death_messages).format(
+        victim=member.display_name,
+        killer=interaction.user.display_name
+    )
+
+    embed = discord.Embed(
+        title="💀 Death Message",
+        description=death_message,
+        color=discord.Color.dark_red()
+    )
+
+    await interaction.response.send_message(embed=embed)
 
 # Slash command versions for popup/autocomplete support
 @bot.tree.command(name='hello', description='Say hello')
@@ -579,44 +613,7 @@ async def ban_slash(interaction: discord.Interaction, member: discord.Member, re
         await interaction.response.send_message("❌ I can't ban someone with a higher or equal role than me!")
         return
 
-    death_messages = [
-        "{victim} was run over by an F-18 flown by {killer}.",
-        "{victim} was sniped by {killer} from 50ft away.",
-        "{victim} was quickscoped by {killer}.",
-        "{victim} was no-scoped by {killer}.",
-        "{victim} was flattened by a piano dropped by {killer}.",
-        "{victim} was launched into the sun by {killer}.",
-        "{victim} was erased from existence by {killer}.",
-        "{victim} was fed to a shark by {killer}.",
-        "{victim} was hunted down by {killer}'s attack helicopter.",
-        "{victim} forgot to pay taxes and was found by {killer}.",
-        "{victim} challenged {killer} to a duel and lost.",
-        "{victim} was drop-kicked into another dimension by {killer}.",
-        "{victim} was crushed by a giant rubber duck summoned by {killer}.",
-        "{victim} was vaporized by {killer}'s orbital laser.",
-        "{victim} was sent to the shadow realm by {killer}.",
-        "{victim} was deleted from the server by {killer}.",
-        "{victim} was struck by lightning aimed by {killer}.",
-        "{victim} was hit by a train driven by {killer}.",
-        "{victim} was thrown into a volcano by {killer}.",
-        "{victim} was turned into a pancake by {killer}.",
-        "{victim} was atomized by {killer}.",
-        "{victim} was sacrificed to the Discord gods by {killer}.",
-        "{victim} tripped over {killer}'s banana peel.",
-        "{victim} was blasted into orbit by {killer}.",
-        "{victim} got too close to {killer}'s nuclear launch button.",
-        "{victim} was obliterated by a tactical nuke called in by {killer}.",
-        "{victim} accidentally angered {killer}.",
-        "{victim} got comboed into oblivion by {killer}.",
-        "{victim} was sent on a one-way trip to the moon by {killer}.",
-        "{victim} was hit with a steel chair by {killer}.",
-        "{victim} was defeated by {killer} in an epic boss fight.",
-        "{victim} was consumed by a black hole created by {killer}.",
-        "{victim} got ratioed by {killer}.",
-        "{victim} was removed from the timeline by {killer}.",
-        "{victim} was bonked by {killer}.",
-        "{victim} was outplayed by {killer}."
-    ]
+
 
     death_message = random.choice(death_messages).format(
         victim=member.display_name,
@@ -808,11 +805,6 @@ async def ship_slash(interaction: discord.Interaction, person1: str, person2: st
     response = f'💕 **{person1}** + **{person2}** = **{percentage}%** compat\n{bars}'
     await interaction.response.send_message(response)
 
-# Info Commands
-# Fun Commands
-# Moderation Commands
-# Utility Commands
-# Error handling
 @bot.event
 async def on_command_error(ctx, error):
     # Prevent duplicate error messages
